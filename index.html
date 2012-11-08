@@ -146,12 +146,13 @@
 	  socket.on('connect', function(){
 	    socket_connection = true;
 
-	    socket.on('message', function(msg){
-	      // my msg
+	    socket.on('connected', function(){
+		  $('#connectionStatusText').html("Connected");
 	    });
 
 	    socket.on('disconnect', function(){
 		  socket_connection = false;
+		  $('#connectionStatusText').html("Disconnected");
 		});
 	  });
 
@@ -202,6 +203,10 @@
 
 	  function connect(){
 		$('#connectionStatusText').html("Connecting...");
+
+	  	store.getAllPrefs(function(prefs){
+	  		socket.emit('set_prefs', prefs);
+	  	});
 	  }
 	</script>
   </body>
