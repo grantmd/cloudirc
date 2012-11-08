@@ -29,5 +29,20 @@ var localStore = {
 		var prefs = JSON.parse(localStorage.prefs);
 		
 		handler(prefs[prefName]);
+	},
+	getAllPrefs: function(handler) {
+		var prefs = JSON.parse(localStorage.prefs);
+		
+		handler(prefs);
+	},
+	count: function(handler) {
+		var prefs = JSON.parse(localStorage.prefs);
+
+		var size = 0, key;
+		for (key in prefs){
+			if (prefs.hasOwnProperty(key)) size++;
+		}
+
+		handler(size);
 	}
 };

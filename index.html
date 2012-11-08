@@ -31,7 +31,7 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="brand" href="/">cloudirc</a>
-          <p class="navbar-text pull-right" id="connection_status">
+          <p class="navbar-text pull-right" id="connectionStatus">
            	<i class="icon-signal icon-white"></i> Connecting...
           </p>
         </div>
@@ -123,7 +123,7 @@
 	  </div>
 	  <div class="modal-footer">
 	    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
-	    <a href="#" class="btn btn-primary">Save changes</a>
+	    <a href="#" class="btn btn-primary" id="prefsSave">Save changes</a>
 	  </div>
 	</div>
 
@@ -138,15 +138,55 @@
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
 	  var store = localStore;
-	  localStore.setup(function(){
-	  	$('#prefsModal').modal('show');
 
-		var socket = io.connect('http://localhost');
-		socket.on('news', function (data) {
-		  console.log(data);
-		  socket.emit('my other event', { my: 'data' });
-		});
+	  var socket = io.connect('http://localhost');
+	  socket.on('news', function (data) {
+	    console.log(data);
+	    socket.emit('my other event', { my: 'data' });
 	  });
+
+	  $(window).load(function(){
+	  	  $('#prefsSave').click(savePrefs);
+
+	  	  $('#connectionStatus').click(openPrefs);
+
+		  store.setup(function(){
+		  	store.count(function(numPrefs){
+		  		if (!numPrefs){
+		  			openPrefs();
+		  		}
+		  		else{
+		  			connect();
+		  		}
+		  	})
+		  });
+	  });
+
+	  function openPrefs(){
+	  	store.getPref('nickname',		function(value){ $('#inputNickname').val(value); });
+	  	store.getPref('name',			function(value){ $('#inputName').val(value); });
+	  	store.getPref('hostname',		function(value){ $('#inputHostname').val(value); });
+	  	store.getPref('port',			function(value){ value ? $('#inputPort').val(value) : $('#inputPort').val(6667); });
+	  	store.getPref('serverPassword',	function(value){ $('#inputServerPassword').val(value); });
+
+	  	$('#prefsModal').modal('show');
+	  }
+
+	  function savePrefs(){
+	  	$('#prefsModal').modal('hide');
+
+	  	store.setPref('nickname',		$('#inputNickname').val());
+	  	store.setPref('name',			$('#inputName').val());
+	  	store.setPref('hostname',		$('#inputHostname').val());
+	  	store.setPref('port',			$('#inputPort').val());
+	  	store.setPref('serverPassword',	$('#inputServerPassword').val());
+
+	  	connect();
+	  }
+
+	  function connect(){
+
+	  }
 	</script>
   </body>
 </html>
