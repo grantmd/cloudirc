@@ -31,9 +31,11 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="brand" href="/">cloudirc</a>
-          <p class="navbar-text pull-right" id="connectionStatus">
-           	<i class="icon-signal icon-white"></i> Connecting...
-          </p>
+          <ul class="nav pull-right">
+          <li>
+           	<a href="#" id="connectionStatus"><i class="icon-signal icon-white"></i> <span id="connectionStatusText">Configuring...</span></a>
+          </li>
+      	  </ul>
         </div>
       </div>
     </div>
@@ -76,7 +78,7 @@
 	    <h3 id="prefsModalLabel">Preferences</h3>
 	  </div>
 	  <div class="modal-body">
-	    <form class="form-horizontal">
+	    <form class="form-horizontal" id="prefsForm">
 	      <fieldset>
     	  <legend>Identity</legend>
 
@@ -137,18 +139,32 @@
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
+	  var socket_connection = false;
 	  var store = localStore;
 
 	  var socket = io.connect('http://localhost');
-	  socket.on('news', function (data) {
-	    console.log(data);
-	    socket.emit('my other event', { my: 'data' });
+	  socket.on('connect', function(){
+	    socket_connection = true;
+
+	    socket.on('message', function(msg){
+	      // my msg
+	    });
+
+	    socket.on('disconnect', function(){
+		  socket_connection = false;
+		});
 	  });
 
 	  $(window).load(function(){
-	  	  $('#prefsSave').click(savePrefs);
+	  	  $('#prefsSave').click(function(){ savePrefs(); return false; });
+	  	  $('#prefsForm').keydown(function(event){
+	  	  	if (event.which == 13){
+	  	  		event.preventDefault();
+	  	  		savePrefs();
+	  	  	}
+	  	  });
 
-	  	  $('#connectionStatus').click(openPrefs);
+	  	  $('#connectionStatus').click(function(){ openPrefs(); return false; });
 
 		  store.setup(function(){
 		  	store.count(function(numPrefs){
@@ -185,7 +201,7 @@
 	  }
 
 	  function connect(){
-
+		$('#connectionStatusText').html("Connecting...");
 	  }
 	</script>
   </body>
