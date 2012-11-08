@@ -8,15 +8,22 @@ var localStore = {
 		}
 	},
 	setup: function(handler) {
-		if (!localStorage.prefs) localStore.reset();
+		if (!localStorage.prefs) localStore.resetPrefs();
+		if (!localStorage.channels) localStore.resetChannels();
 
 		if (handler) handler();
 	},
-	reset: function(handler) {
+	resetPrefs: function(handler) {
 		localStorage.prefs = JSON.stringify({});
 
 		if (handler) handler();
 	},
+	resetChannels: function(handler) {
+		localStorage.channels = JSON.stringify({});
+
+		if (handler) handler();
+	},
+
 	setPref: function(prefName, prefValue, handler) {
 		var prefs = JSON.parse(localStorage.prefs);
 
@@ -35,12 +42,44 @@ var localStore = {
 		
 		handler(prefs);
 	},
-	count: function(handler) {
+	countPrefs: function(handler) {
 		var prefs = JSON.parse(localStorage.prefs);
 
 		var size = 0, key;
 		for (key in prefs){
 			if (prefs.hasOwnProperty(key)) size++;
+		}
+
+		handler(size);
+	},
+
+	addChannel: function(channelName, channelType, handler) {
+		var channels = JSON.parse(localStorage.channels);
+
+		channels[channelName] = channelType;
+		localStorage.channels = JSON.stringify(channels);
+
+		if (handler) handler();
+	},
+	removeChannel: function(channelName, handler) {
+		var channels = JSON.parse(localStorage.channels);
+
+		delete channels[channelName];
+		localStorage.channels = JSON.stringify(channels);
+
+		if (handler) handler();
+	},
+	getAllChannels: function(handler) {
+		var channels = JSON.parse(localStorage.channels);
+		
+		handler(channels);
+	},
+	countChannels: function(handler) {
+		var channels = JSON.parse(localStorage.channels);
+
+		var size = 0, key;
+		for (key in channels){
+			if (channels.hasOwnProperty(key)) size++;
 		}
 
 		handler(size);

@@ -64,9 +64,7 @@ io.sockets.on('connection', function(socket){
 
 				port: prefs['port'],
 				realName: prefs['name'],
-				password: prefs['serverPassword'],
-
-				channels: ['#cloudirc']
+				password: prefs['serverPassword']
 			});
 
 			client.addListener('error', function(message){
