@@ -24,15 +24,6 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-	<script src="/socket.io/socket.io.js"></script>
-	<script>
-	  var socket = io.connect('http://localhost');
-	  socket.on('news', function (data) {
-	    console.log(data);
-	    socket.emit('my other event', { my: 'data' });
-	  });
-	</script>
   </head>
 
   <body>
@@ -107,5 +98,20 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="/js/jquery.min.js"></script>
   	<script src="/js/bootstrap.min.js"></script>
+
+    <script src="/js/localStore.js"></script>
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+	  var store = localStore;
+	  localStore.setup(function(){
+
+		  var socket = io.connect('http://localhost');
+		  socket.on('news', function (data) {
+		    console.log(data);
+		    socket.emit('my other event', { my: 'data' });
+		  });
+	  });
+	</script>
   </body>
 </html>
