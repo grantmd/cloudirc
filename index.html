@@ -70,6 +70,20 @@
 
     </div><!--/.fluid-container-->
 
+    <div class="modal hide fade" id="prefsModal" role="dialog" aria-labelledby="prefsModalLabel" aria-hidden="true">
+	  <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	    <h3 id="prefsModalLabel">Preferences</h3>
+	  </div>
+	  <div class="modal-body">
+	    <p>Stuff goes here.</p>
+	  </div>
+	  <div class="modal-footer">
+	    <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+	    <a href="#" class="btn btn-primary">Save changes</a>
+	  </div>
+	</div>
+
 	<!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -82,12 +96,13 @@
 	<script>
 	  var store = localStore;
 	  localStore.setup(function(){
+	  	$('#prefsModal').modal('show');
 
-		  var socket = io.connect('http://localhost');
-		  socket.on('news', function (data) {
-		    console.log(data);
-		    socket.emit('my other event', { my: 'data' });
-		  });
+		var socket = io.connect('http://localhost');
+		socket.on('news', function (data) {
+		  console.log(data);
+		  socket.emit('my other event', { my: 'data' });
+		});
 	  });
 	</script>
   </body>
