@@ -215,9 +215,18 @@
 		socket.on('motd', function(message){
 			addChatLine('host', message);
 		});
+
+		socket.on('notice', function(data){
+			addChatLine('host', data.text); // TODO: Change the style of this, maybe?
+		});
+
+		socket.on('registered', function(data){
+			addChatLine('host', data.args[1]); // TODO: Change the style of this, maybe?
+		});
 	  });
 
 	  function addChatLine(channel, message){
+	  	var container = $('#channelContent #'+channel+' tbody');
 	  	if (!container) return;
 
 	  	var d = new Date();
@@ -231,7 +240,7 @@
 		else if (hour == 0){
 			hour = 12;
 		}
-		$('<tr><td class="timestamp">'+hour+':'+minute+' '+ampm+'</td><td>'+message+'</td>').appendTo($('#channelContent #'+channel+' tbody'));
+		$('<tr><td class="timestamp">'+hour+':'+minute+' '+ampm+'</td><td>'+message+'</td>').appendTo(container);
 
 		// TODO: Check if this is active tab and change its state if not
 	  }
