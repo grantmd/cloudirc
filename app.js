@@ -207,6 +207,17 @@ io.sockets.on('connection', function(socket){
 	socket.on('chat', function(message){
 		console.log('chat (in '+message.channel+'): '+message.message);
 		if (client){
+			var channel_split = message.channel.split("-", 2);
+			var type, channel;
+			if (channel_split[0] == 'channel'){
+				type = 'channel';
+				channel = '#'+channel_split[1];
+			}
+			else{
+				type = channel_split[0];
+				channel = channel_split[1];
+			}
+
 			if (message.message.substr(0, 1) == '/'){
 				var words = message.message.split(" ");
 				if (words[0] == '/join'){
@@ -215,14 +226,14 @@ io.sockets.on('connection', function(socket){
 					});
 				}
 				else if (words[0] == '/me'){
-					client.action(message.channel, message.message.replace("/me "));
+					client.action(channel, message.message.replace("/me "));
 				}
 				else{
 					console.log("Unknown command: "+words[0]);
 				}
 			}
 			else{
-				client.say(message.channel, message.message);
+				client.say(channel, message.message);
 			}
 		}
 	});
