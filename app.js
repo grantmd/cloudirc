@@ -114,6 +114,14 @@ io.sockets.on('connection', function(socket){
 				});
 			});
 
+			client.addListener('nick', function(old_nick, new_nick, channels){
+				socket.emit('nick', {
+					old_nick: old_nick,
+					new_nick: new_nick,
+					channels: channels
+				});
+			});
+
 			client.addListener('motd', function(motd){
 				socket.emit('motd', motd);
 			});
