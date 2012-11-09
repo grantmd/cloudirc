@@ -184,10 +184,10 @@
 		  			$('<table class="table table-condensed table-hover"><tbody></tbody></table>').appendTo($('<div class="tab-pane" id="channel-'+channel+'"></div>').appendTo($('#channelContent')));
 
 		  			store.addChannel(channel, 'channel');
+
+		  			// TODO: make the tab active
 			 	}
 	  		});
-
-		  	// TODO: make the tab active
 		});
 
 		socket.on('message', function(data){
@@ -203,6 +203,8 @@
 		  			$('<table class="table table-condensed table-hover"><tbody></tbody></table>').appendTo($('<div class="tab-pane" id="pm-'+data.from+'"></div>').appendTo($('#channelContent')));
 
 		  			store.addChannel(data.from, 'pm');
+
+		  			// TODO: make the tab active
 			 	}
 
 			 	addChatLine('pm-'+data.from, '<b>'+data.from+'</b> '+data.text);
@@ -255,6 +257,8 @@
 	  	  		});
 
 	  	  		$('#chatBox').val('');
+
+				// TODO: If this is a PM, we probably need to add the message to the UI ourselves
 	  	  	}
 	  	  });
 
