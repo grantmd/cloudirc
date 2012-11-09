@@ -204,8 +204,31 @@ io.sockets.on('connection', function(socket){
 		}
 	});
 
+	socket.on('chat', function(message){
+		console.log('chat (in '+message.channel+'): '+message.message);
+		if (client){
+			if (message.message.substr(0, 1) == '/'){
+				var words = message.message.split(" ");
+				if (words[0] == '/join'){
+					client.join(words[1], function(){
+						socket.emit('channel_joined', words[1]);
+					});
+				}
+				else if (words[0] == '/me'){
+					client.action(message.channel, message.message.replace("/me "));
+				}
+				else{
+					console.log("Unknown command: "+words[0]);
+				}
+			}
+			else{
+				client.say(message.channel, message.message);
+			}
+		}
+	});
+
 	socket.on('disconnect', function(){
-		if (client) client.disconnect("Goodbye"); // Obviously, in the future, we should persist this
+		//if (client) client.disconnect("Goodbye"); // Obviously, in the future, we should persist this
 	});
 });
 

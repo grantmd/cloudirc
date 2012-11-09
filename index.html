@@ -136,6 +136,7 @@
 	<script>
 	  var socket_connection = false;
 	  var store = localStore;
+	  var currentChannel;
 
 	  var socket = io.connect('http://localhost');
 	  socket.on('connect', function(){
@@ -151,6 +152,14 @@
 		  $('#connectionStatusText').html("Disconnected");
 		  $('#chatBox').prop("disabled", true);
 		});
+
+		socket.on('channel_joined', function(channel){
+			channel = channel.replace('#', '');
+			$('#channelList').append('<li><a href="#channel-'+channel+'" data-toggle="tab">#'+channel+'</a></li>');
+		  	$('#channelContent').append('<div class="tab-pane" id="channel-'+channel+'"></div>');
+
+		  	store.addChannel(channel, 'channel');
+		});
 	  });
 
 	  $(window).load(function(){
@@ -163,6 +172,19 @@
 	  	  });
 
 	  	  $('#connectionStatus').click(function(){ openPrefs(); return false; });
+
+	  	  $('#chatBox').keydown(function(event){
+	  	  	if (event.which == 13){
+	  	  		event.preventDefault();
+	  	  		
+	  	  		socket.emit('chat', {
+	  	  			channel: currentChannel,
+	  	  			message: $('#chatBox').val()
+	  	  		});
+
+	  	  		$('#chatBox').val('');
+	  	  	}
+	  	  });
 
 		  store.setup(function(){
 		  	store.getAllChannels(function(channels){
@@ -221,6 +243,8 @@
 
 		  	$('#channelList').prepend('<li class="active"><a href="#channel-host" data-toggle="tab">'+prefs['hostname']+'</a></li>');
 		  	$('#channelContent').prepend('<div class="tab-pane active" id="channel-host"></div>');
+
+		  	currentChannel = 'channel-host';
 
 	  		socket.emit('set_prefs', prefs);
 	  	});
