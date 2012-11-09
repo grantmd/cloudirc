@@ -67,13 +67,131 @@ io.sockets.on('connection', function(socket){
 				password: prefs['serverPassword']
 			});
 
+			// Listeners for events. Mostly we tell the socket about them
 			client.addListener('error', function(message){
 				console.log('error: ', message);
+				socket.emit('error', message); // TODO: does this stomp on anything? should be irc_error?
 			});
 
 			client.addListener('connect', function(){
 				console.log("Connected to IRC");
 				socket.emit('connected');
+			});
+
+			client.addListener('registered', function(message){
+				socket.emit('registered', message);
+			});
+
+			client.addListener('ping', function(message){
+				socket.emit('ping', message);
+			});
+
+			client.addListener('notice', function(from, to, text, message){
+				socket.emit('notice', {
+					from: from,
+					to: to,
+					text: text,
+					message: message
+				});
+			});
+
+			client.addListener('+mode', function(who, nick, mode, user, message){
+				socket.emit('+mode', {
+					who: who, // TODO: What is this, really?
+					nick: nick,
+					mode: mode,
+					user: user,
+					message: message
+				});
+			});
+			client.addListener('-mode', function(who, nick, mode, user, message){
+				socket.emit('-mode', {
+					who: who, // TODO: What is this, really?
+					nick: nick,
+					mode: mode,
+					user: user,
+					message: message
+				});
+			});
+
+			client.addListener('motd', function(motd){
+				socket.emit('motd', motd);
+			});
+
+			client.addListener('topic', function(channel, topic, nick){
+				socket.emit('topic', {
+					channel: channel,
+					topic: topic,
+					nick: nick
+				});
+			});
+
+			client.addListener('join', function(channel, nick, message){
+				socket.emit('join', {
+					channel: channel,
+					nick: nick,
+					message: message
+				});
+			});
+
+			client.addListener('part', function(channel, nick, message){
+				socket.emit('part', {
+					channel: channel,
+					nick: nick,
+					message: message
+				});
+			});
+
+			client.addListener('kick', function(channel, nick, by, message){
+				socket.emit('kick', {
+					channel: channel,
+					nick: nick,
+					by: by,
+					message: message
+				});
+			});
+
+			client.addListener('kill', function(nick, by, channels, message){
+				socket.emit('kill', {
+					nick: nick,
+					by: by, // TODO: confirm this. Is message.args[1] in the docs
+					channels: channels,
+					message: message
+				});
+			});
+
+			client.addListener('message', function(from, to, text, message){
+				socket.emit('message', {
+					from: from,
+					to: to,
+					text: text,
+					message: message
+				});
+			});
+
+			// This is also thrown by the above event, so maybe not necessary?
+			client.addListener('pm', function(from, text, message){
+				socket.emit('message', {
+					from: from,
+					text: text,
+					message: message
+				});
+			});
+
+			client.addListener('invite', function(channel, from, message){
+				socket.emit('invite', {
+					channel: channel,
+					from: from,
+					message: message
+				});
+			});
+
+			client.addListener('quit', function(who, reason, channels){
+				socket.emit('invite', {
+					who: who,
+					reason: reason,
+					channels: channels
+				});
 			});
 		}
 	});
