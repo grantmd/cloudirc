@@ -179,7 +179,7 @@ io.sockets.on('connection', function(socket){
 
 			// This is also thrown by the above event, so maybe not necessary?
 			client.addListener('pm', function(from, text, message){
-				socket.emit('message', {
+				socket.emit('pm', {
 					from: from,
 					text: text,
 					message: message
@@ -195,7 +195,7 @@ io.sockets.on('connection', function(socket){
 			});
 
 			client.addListener('quit', function(who, reason, channels){
-				socket.emit('invite', {
+				socket.emit('quit', {
 					who: who,
 					reason: reason,
 					channels: channels
