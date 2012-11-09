@@ -40,6 +40,8 @@ io.sockets.on('connection', function(socket){
 			if (client.opt.server != prefs['hostname'] || client.opt.port != prefs['port'] || client.opt.password != prefs['serverPassword']){
 				client.disconnect("Goodbye");
 
+				client.motd = ''; // Fix node-irc bug when no motd
+
 				client.opt.server = prefs['hostname'];
 				client.opt.port = prefs['port'];
 				client.opt.password = prefs['serverPassword'];
@@ -66,6 +68,8 @@ io.sockets.on('connection', function(socket){
 				realName: prefs['name'],
 				password: prefs['serverPassword']
 			});
+
+			client.motd = ''; // Fix node-irc bug when no motd
 
 			// Listeners for events. Mostly we tell the socket about them
 			client.addListener('error', function(message){
