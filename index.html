@@ -14,9 +14,14 @@
         padding-top: 60px;
         padding-bottom: 40px;
       }
-      .sidebar-nav {
-        padding: 9px 0;
+      .timestamp {
+        width: 60px;
+        color: #888;
       }
+      #channelContent td {
+      	border: 0;
+      }
+
     </style>
     <link href="/css/bootstrap-responsive.css" rel="stylesheet">
 
@@ -149,7 +154,7 @@
 		  		var type = channels[channel];
 
 		  		channelList.append('<li><a href="#'+type+'-'+channel+'" data-toggle="tab">'+(type == 'channel' ? '#' : '')+channel+'</a></li>');
-		  		channelContent.append('<div class="tab-pane" id="'+type+'-'+channel+'"></div>');
+		  		$('<table class="table table-condensed table-hover"><tbody></tbody></table>').appendTo($('<div class="tab-pane" id="'+type+'-'+channel+'"></div>').appendTo(channelContent));
 
 		  		if (type == 'channel'){
 		  			socket.emit('chat', {
@@ -176,7 +181,7 @@
 	  		store.getChannel(channel, function(existing_type){
 	  			if (existing_type != 'channel'){
 			  		channelList.append('<li><a href="#channel-'+channel+'" data-toggle="tab">#'+channel+'</a></li>');
-			  		channelContent.append('<div class="tab-pane" id="channel-'+channel+'"></div>');
+		  			$('<table class="table table-condensed table-hover"><tbody></tbody></table>').appendTo($('<div class="tab-pane" id="channel-'+channel+'"></div>').appendTo(channelContent));
 
 		  			store.addChannel(channel, 'channel');
 			 	}
@@ -186,6 +191,7 @@
 		});
 
 		socket.on('message', function(data){
+			addChatLine($('#channelContent #channel-'+data.to.substr(1)+' tbody'), '<b>'+data.from+'</b> '+data.text);
 			// debug - websocket writing 5:::{"name":"message","args":[{"from":"myles","to":"#cloudirc","text":"hello mygrant","message":{"prefix":"myles!u1152@speck-2C7FD494.com","nick":"myles","user":"u1152","host":"speck-2C7FD494.com","command":"PRIVMSG","rawCommand":"PRIVMSG","commandType":"normal","args":["#cloudirc","hello mygrant"]}}]}
 
 			// debug - websocket writing 5:::{"name":"message","args":[{"from":"myles","to":"mygrant","text":"Directly to mygrant","message":{"prefix":"myles!u1152@speck-2C7FD494.com","nick":"myles","user":"u1152","host":"speck-2C7FD494.com","command":"PRIVMSG","rawCommand":"PRIVMSG","commandType":"normal","args":["mygrant","Directly to mygrant"]}}]}
@@ -194,7 +200,28 @@
 		socket.on('pm', function(data){
 			// debug - websocket writing 5:::{"name":"pm","args":[{"from":"myles","text":"Directly to mygrant","message":{"prefix":"myles!u1152@speck-2C7FD494.com","nick":"myles","user":"u1152","host":"speck-2C7FD494.com","command":"PRIVMSG","rawCommand":"PRIVMSG","commandType":"normal","args":["mygrant","Directly to mygrant"]}}]}
 		});
+
+		socket.on('motd', function(message){
+			addChatLine($('#channelContent #host tbody'), message);
+		});
 	  });
+
+	  function addChatLine(container, message){
+	  	if (!container) return;
+
+	  	var d = new Date();
+		var hour = d.getHours();
+		var minute = d.getMinutes();
+		var ampm = 'AM';
+		if (hour >= 12){
+			ampm = 'PM';
+			if (hour > 12) hour -= 12;
+		}
+		else if (hour == 0){
+			hour = 12;
+		}
+		$('<tr><td class="timestamp">'+hour+':'+minute+' '+ampm+'</td><td>'+message+'</td>').appendTo(container);
+	  }
 
 	  $(window).load(function(){
 	  	  $('#prefsSave').click(function(){ savePrefs(); return false; });
@@ -269,7 +296,7 @@
 	  		$('#chatNick').html(prefs['nickname']);
 
 		  	$('#channelList').prepend('<li class="active"><a href="#host" data-toggle="tab">'+prefs['hostname']+'</a></li>');
-		  	$('#channelContent').prepend('<div class="tab-pane active" id="host"></div>');
+		  	$('<table class="table table-condensed table-hover"><tbody></tbody></table>').appendTo($('<div class="tab-pane active" id="host"></div>').appendTo($('#channelContent')));
 
 		  	currentChannel = prefs['hostname'];
 
