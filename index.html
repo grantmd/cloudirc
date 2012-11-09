@@ -180,8 +180,8 @@
 	  		// We only want one!
 	  		store.getChannel(channel, function(existing_type){
 	  			if (existing_type != 'channel'){
-			  		channelList.append('<li><a href="#channel-'+channel+'" data-toggle="tab">#'+channel+'</a></li>');
-		  			$('<table class="table table-condensed table-hover"><tbody></tbody></table>').appendTo($('<div class="tab-pane" id="channel-'+channel+'"></div>').appendTo(channelContent));
+			  		$('#channelList').append('<li><a href="#channel-'+channel+'" data-toggle="tab">#'+channel+'</a></li>');
+		  			$('<table class="table table-condensed table-hover"><tbody></tbody></table>').appendTo($('<div class="tab-pane" id="channel-'+channel+'"></div>').appendTo($('#channelContent')));
 
 		  			store.addChannel(channel, 'channel');
 			 	}
@@ -193,12 +193,21 @@
 		socket.on('message', function(data){
 			addChatLine('channel-'+data.to.substr(1), '<b>'+data.from+'</b> '+data.text);
 			// debug - websocket writing 5:::{"name":"message","args":[{"from":"myles","to":"#cloudirc","text":"hello mygrant","message":{"prefix":"myles!u1152@speck-2C7FD494.com","nick":"myles","user":"u1152","host":"speck-2C7FD494.com","command":"PRIVMSG","rawCommand":"PRIVMSG","commandType":"normal","args":["#cloudirc","hello mygrant"]}}]}
-
-			// debug - websocket writing 5:::{"name":"message","args":[{"from":"myles","to":"mygrant","text":"Directly to mygrant","message":{"prefix":"myles!u1152@speck-2C7FD494.com","nick":"myles","user":"u1152","host":"speck-2C7FD494.com","command":"PRIVMSG","rawCommand":"PRIVMSG","commandType":"normal","args":["mygrant","Directly to mygrant"]}}]}
 		});
 
 		socket.on('pm', function(data){
-			// debug - websocket writing 5:::{"name":"pm","args":[{"from":"myles","text":"Directly to mygrant","message":{"prefix":"myles!u1152@speck-2C7FD494.com","nick":"myles","user":"u1152","host":"speck-2C7FD494.com","command":"PRIVMSG","rawCommand":"PRIVMSG","commandType":"normal","args":["mygrant","Directly to mygrant"]}}]}
+			// Create tab if it doesn't exist
+	  		store.getChannel(data.from, function(existing_type){
+	  			if (existing_type != 'pm'){
+			  		$('#channelList').append('<li><a href="#pm-'+data.from+'" data-toggle="tab">'+data.from+'</a></li>');
+		  			$('<table class="table table-condensed table-hover"><tbody></tbody></table>').appendTo($('<div class="tab-pane" id="pm-'+data.from+'"></div>').appendTo($('#channelContent')));
+
+		  			store.addChannel(data.from, 'pm');
+			 	}
+
+			 	addChatLine('pm-'+data.from, '<b>'+data.from+'</b> '+data.text);
+				// debug - websocket writing 5:::{"name":"pm","args":[{"from":"myles","text":"Directly to mygrant","message":{"prefix":"myles!u1152@speck-2C7FD494.com","nick":"myles","user":"u1152","host":"speck-2C7FD494.com","command":"PRIVMSG","rawCommand":"PRIVMSG","commandType":"normal","args":["mygrant","Directly to mygrant"]}}]}
+	  		});
 		});
 
 		socket.on('motd', function(message){

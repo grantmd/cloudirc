@@ -169,6 +169,9 @@ io.sockets.on('connection', function(socket){
 			});
 
 			client.addListener('message', function(from, to, text, message){
+				// If this is to us, discard, since 'pm' event below is also thrown
+				if (to == client.opt.nick) return;
+
 				socket.emit('message', {
 					from: from,
 					to: to,
@@ -177,7 +180,6 @@ io.sockets.on('connection', function(socket){
 				});
 			});
 
-			// This is also thrown by the above event, so maybe not necessary?
 			client.addListener('pm', function(from, text, message){
 				socket.emit('pm', {
 					from: from,
