@@ -184,6 +184,16 @@
 
 		  	// TODO: make the tab active
 		});
+
+		socket.on('message', function(data){
+			// debug - websocket writing 5:::{"name":"message","args":[{"from":"myles","to":"#cloudirc","text":"hello mygrant","message":{"prefix":"myles!u1152@speck-2C7FD494.com","nick":"myles","user":"u1152","host":"speck-2C7FD494.com","command":"PRIVMSG","rawCommand":"PRIVMSG","commandType":"normal","args":["#cloudirc","hello mygrant"]}}]}
+
+			// debug - websocket writing 5:::{"name":"message","args":[{"from":"myles","to":"mygrant","text":"Directly to mygrant","message":{"prefix":"myles!u1152@speck-2C7FD494.com","nick":"myles","user":"u1152","host":"speck-2C7FD494.com","command":"PRIVMSG","rawCommand":"PRIVMSG","commandType":"normal","args":["mygrant","Directly to mygrant"]}}]}
+		});
+
+		socket.on('pm', function(data){
+			// debug - websocket writing 5:::{"name":"pm","args":[{"from":"myles","text":"Directly to mygrant","message":{"prefix":"myles!u1152@speck-2C7FD494.com","nick":"myles","user":"u1152","host":"speck-2C7FD494.com","command":"PRIVMSG","rawCommand":"PRIVMSG","commandType":"normal","args":["mygrant","Directly to mygrant"]}}]}
+		});
 	  });
 
 	  $(window).load(function(){

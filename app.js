@@ -232,7 +232,7 @@ io.sockets.on('connection', function(socket){
 					console.log("Unknown command: "+words[0]);
 				}
 			}
-			else{
+			else if (type != 'host'){
 				client.say(channel, message.message);
 			}
 		}
