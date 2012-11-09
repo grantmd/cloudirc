@@ -69,6 +69,11 @@ var localStore = {
 
 		if (handler) handler();
 	},
+	getChannel: function(channelName, handler) {
+		var channels = JSON.parse(localStorage.channels);
+
+		handler(channels[channelName]);
+	},
 	getAllChannels: function(handler) {
 		var channels = JSON.parse(localStorage.channels);
 		

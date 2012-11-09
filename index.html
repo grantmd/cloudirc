@@ -139,20 +139,48 @@
 	    socket.on('connected', function(){
 		  $('#connectionStatusText').html("Connected");
 		  $('#chatBox').prop("disabled", false);
+
+		  // Re-join channels
+		  store.getAllChannels(function(channels){
+		  	var channelList = $('#channelList');
+		  	var channelContent = $('#channelContent');
+
+		  	for (var channel in channels){
+		  		var type = channels[channel];
+
+		  		channelList.append('<li><a href="#'+type+'-'+channel+'" data-toggle="tab">'+(type == 'channel' ? '#' : '')+channel+'</a></li>');
+		  		channelContent.append('<div class="tab-pane" id="'+type+'-'+channel+'"></div>');
+
+		  		if (type == 'channel'){
+		  			socket.emit('chat', {
+		  	  			channel: 'host',
+		  	  			message: '/join #'+channel
+		  	  		});
+		 		}
+			}
+		  });
 	    });
 
 	    socket.on('disconnect', function(){
 		  socket_connection = false;
 		  $('#connectionStatusText').html("Disconnected");
 		  $('#chatBox').prop("disabled", true);
+	  	  $('#channelList').empty();
+	  	  $('#channelContent').empty();
 		});
 
 		socket.on('channel_joined', function(channel){
 			channel = channel.replace('#', '');
-			$('#channelList').append('<li><a href="#channel-'+channel+'" data-toggle="tab">#'+channel+'</a></li>');
-		  	$('#channelContent').append('<div class="tab-pane" id="channel-'+channel+'"></div>');
 
-		  	store.addChannel(channel, 'channel');
+	  		// We only want one!
+	  		store.getChannel(channel, function(existing_type){
+	  			if (existing_type != 'channel'){
+			  		channelList.append('<li><a href="#channel-'+channel+'" data-toggle="tab">#'+channel+'</a></li>');
+			  		channelContent.append('<div class="tab-pane" id="channel-'+channel+'"></div>');
+
+		  			store.addChannel(channel, 'channel');
+			 	}
+	  		});
 
 		  	// TODO: make the tab active
 		});
@@ -188,36 +216,17 @@
           });
 
 		  store.setup(function(){
-		  	store.getAllChannels(function(channels){
-		  		var channelList = $('#channelList');
-		  		var channelContent = $('#channelContent');
+	  		$('#channelList').empty();
+	  		$('#channelContent').empty();
 
-		  		channelList.empty();
-		  		channelContent.empty();
-
-		  		for (var channel in channels){
-		  			var type = channels[channel];
-
-		  			channelList.append('<li><a href="#'+type+'-'+channel+'" data-toggle="tab">'+(type == 'channel' ? '#' : '')+channel+'</a></li>');
-		  			channelContent.append('<div class="tab-pane" id="'+type+'-'+channel+'"></div>');
-
-		  			if (type == 'channel'){
-		  				socket.emit('chat', {
-			  	  			channel: 'host',
-			  	  			message: '/join #'+channel
-			  	  		});
-		  			}
+		  	store.countPrefs(function(numPrefs){
+		  		if (!numPrefs){
+		  			openPrefs();
 		  		}
-
-			  	store.countPrefs(function(numPrefs){
-			  		if (!numPrefs){
-			  			openPrefs();
-			  		}
-			  		else{
-			  			connect();
-			  		}
-			  	});
-			  });
+		  		else{
+		  			connect();
+		  		}
+		  	});
 		  });
 	  });
 
